@@ -3,18 +3,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="此刻" currentPath="/now">
-  <section class="section fade-in" style="padding:4rem 0;">
-    <div class="content-container">
-      <h1>此刻</h1>
-      <p style="color:var(--text-secondary); margin-bottom:2rem;">
-        当前状态 · 目标 · 正在做的事
-      </p>
+  <div class="coming-soon fade-in">
+    <div class="code-block">{`// /now — 此刻
+// 当前状态 · 目标 · 正在做的事
+//
+// Status: 页面搭建中
 
-      <p>内容准备中，敬请期待……</p>
-    </div>
-  </section>
+const now = {
+  phase: &#34;研0工程化建设期&#34;,
+  period: &#34;2026.06 - 2026.09&#34;,
+  focus: [&#34;嵌入式系统深入&#34;, &#34;项目积累&#34;, &#34;思维转型&#34;],
+};
+
+// 详细内容即将上线`}</div>
+    <h1>此刻 · 页面准备中</h1>
+    <p>当前阶段、目标和正在做的事，即将在这里呈现。</p>
+    <a href="/about/" class="btn btn-outline" style="margin-top:1rem;">关于我</a>
+  </div>
 </BaseLayout>
-
-<style>
-  .section { padding: 3rem 0; }
-</style>

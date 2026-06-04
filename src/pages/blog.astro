@@ -3,18 +3,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="博客" currentPath="/blog">
-  <section class="section fade-in" style="padding:4rem 0;">
-    <div class="content-container">
-      <h1>博客</h1>
-      <p style="color:var(--text-secondary); margin-bottom:2rem;">
-        诙谐科普 · 技术文章 · 嵌入式思考
-      </p>
+  <div class="coming-soon fade-in">
+    <div class="code-block">{`// TODO: 诙谐科普博客
+// 嵌入式技术 · 通俗讲解 · 工程思考
+//
+// Status: 内容撰写中
+// ETA: 即将上线
 
-      <p>文章准备中，敬请期待……</p>
-    </div>
-  </section>
+while (writing) {
+  makeIt(&#34;understandable&#34;);
+  makeIt(&#34;fun&#34;);
+}`}</div>
+    <h1>博客准备中</h1>
+    <p>诙谐科普与技术文章正在撰写，上线后会第一时间出现在这里。</p>
+    <a href="/" class="btn btn-outline" style="margin-top:1rem;">返回首页</a>
+  </div>
 </BaseLayout>
-
-<style>
-  .section { padding: 3rem 0; }
-</style>

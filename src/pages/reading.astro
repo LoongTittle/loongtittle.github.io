@@ -3,18 +3,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="阅读" currentPath="/reading">
-  <section class="section fade-in" style="padding:4rem 0;">
-    <div class="content-container">
-      <h1>阅读</h1>
-      <p style="color:var(--text-secondary); margin-bottom:2rem;">
-        读书笔记 · 技术 · 认知 · 社科 · 更多
-      </p>
+  <div class="coming-soon fade-in">
+    <div class="code-block">{`// 读书笔记
+// 技术 · 认知 · 社科 · 文学 · 历史
+// 18 本已读 · 精选上线中
+//
+// Status: 笔记整理中
+// ETA: 即将上线
 
-      <p>读书笔记准备中，敬请期待……</p>
-    </div>
-  </section>
+class BookNote {
+  constructor(title, insights) {
+    this.title = title;
+    this.insights = insights;
+  }
+}`}</div>
+    <h1>阅读笔记准备中</h1>
+    <p>精选读书笔记正在整理，上线后可按类别浏览。</p>
+    <a href="/" class="btn btn-outline" style="margin-top:1rem;">返回首页</a>
+  </div>
 </BaseLayout>
-
-<style>
-  .section { padding: 3rem 0; }
-</style>

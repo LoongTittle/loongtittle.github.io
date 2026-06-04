@@ -3,18 +3,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="技术笔记" currentPath="/notes">
-  <section class="section fade-in" style="padding:4rem 0;">
-    <div class="content-container">
-      <h1>技术笔记</h1>
-      <p style="color:var(--text-secondary); margin-bottom:2rem;">
-        STM32 外设库 · 嵌入式基础 · C 语言
-      </p>
+  <div class="coming-soon fade-in">
+    <div class="code-block">{`// STM32F4 外设库参考手册
+// 37 个外设模块 · 类型定义 · 函数签名
+//
+// Status: 笔记整理中
+// ETA: 即将上线
 
-      <p>笔记准备中，敬请期待……</p>
-    </div>
-  </section>
+for (periph in stm32f4_peripherals) {
+  document(periph);
+}`}</div>
+    <h1>笔记准备中</h1>
+    <p>STM32 外设库笔记正在精选整理，上线后可供查阅。</p>
+    <a href="/" class="btn btn-outline" style="margin-top:1rem;">返回首页</a>
+  </div>
 </BaseLayout>
-
-<style>
-  .section { padding: 3rem 0; }
-</style>

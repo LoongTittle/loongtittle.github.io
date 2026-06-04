@@ -10,14 +10,12 @@ export interface Props {
 
 const { title, description = '杨常卿 · 嵌入式工程师个人网站', currentPath = '/' } = Astro.props;
 
+// 只显示有内容的页面
 const navItems = [
   { href: '/', label: '首页' },
   { href: '/about', label: '关于' },
   { href: '/resume', label: '简历' },
   { href: '/projects', label: '项目' },
-  { href: '/blog', label: '博客' },
-  { href: '/notes', label: '笔记' },
-  { href: '/reading', label: '阅读' },
 ];
 ---
 
@@ -35,7 +33,7 @@ const navItems = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -47,19 +45,17 @@ const navItems = [
       <div class="container nav-inner">
         <a href="/" class="nav-logo">杨常卿</a>
         <ul class="nav-links">
-          {navItems.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class:list={[
-                  'nav-link',
-                  { active: currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href)) },
-                ]}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = currentPath === item.href ||
+              (item.href !== '/' && currentPath.startsWith(item.href));
+            return (
+              <li>
+                <a href={item.href} class:list={['nav-link', { active: isActive }]}>
+                  {item.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
@@ -72,8 +68,7 @@ const navItems = [
       <div class="container">
         <p>
           © {new Date().getFullYear()} 杨常卿 ·
-          Built with Astro ·
-          <a href="https://github.com/loongtittle" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/LoongTittle" target="_blank" rel="noopener">GitHub</a>
         </p>
       </div>
     </footer>
