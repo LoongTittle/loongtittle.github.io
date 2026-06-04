@@ -1,17 +1,235 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="杨常卿 · 嵌入式工程师" currentPath="/">
+  <slot name="head">
+    <style>
+      .hero {
+        padding: 5rem 0 4rem;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 2.75rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .hero .highlight {
+        color: var(--accent);
+      }
+
+      .hero .subtitle {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        max-width: 560px;
+        margin: 0 auto 1.5rem;
+        line-height: 1.7;
+      }
+
+      .hero-tags {
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      /* Section */
+      .section {
+        padding: 3rem 0;
+      }
+
+      .section-title {
+        font-size: 1.375rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-light);
+      }
+
+      /* Featured grid */
+      .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+      }
+
+      .featured-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+
+      .featured-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
+
+      .featured-card .card-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+      }
+
+      .featured-card h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+      }
+
+      .featured-card p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+
+      /* Status / Now */
+      .status-bar {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .status-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .status-text {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--success);
+        margin-right: 0.4rem;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      @media (max-width: 768px) {
+        .hero { padding: 3rem 0 2.5rem; }
+        .hero h1 { font-size: 2rem; }
+        .featured-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </slot>
+
+  <!-- Hero -->
+  <section class="hero fade-in">
+    <div class="container">
+      <h1>
+        杨<span class="highlight">常卿</span>
+      </h1>
+      <p class="subtitle">
+        嵌入式软件工程师（无人机/机器人方向）· 从学生思维到工程师思维的践行者
+      </p>
+      <div class="hero-tags">
+        <span class="tag">STM32</span>
+        <span class="tag">C / C++</span>
+        <span class="tag">嵌入式 Linux</span>
+        <span class="tag">无人机</span>
+        <span class="tag">机器人</span>
+      </div>
+      <div class="hero-actions">
+        <a href="/resume" class="btn btn-primary">查看简历</a>
+        <a href="/projects" class="btn btn-outline">浏览项目</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Current Status -->
+  <section class="section">
+    <div class="container">
+      <div class="status-bar fade-in">
+        <div>
+          <div class="status-label">当前阶段</div>
+          <div class="status-text">
+            <span class="status-dot"></span>
+            研0工程化建设期（2026.06 — 2026.09）
+          </div>
+        </div>
+        <a href="/now" class="btn btn-outline" style="font-size:0.8rem;padding:0.35rem 0.9rem;">
+          详情 →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">精选项目</h2>
+      <div class="featured-grid">
+        <a href="/projects/embedded-lab" class="featured-card" style="text-decoration:none;color:inherit;">
+          <div class="card-label">嵌入式</div>
+          <h3>EmbeddedLab · LED 控制系统</h3>
+          <p>STM32 标准外设库开发，串口命令控制 LED，涵盖 GPIO / USART / TIM 等多外设协同</p>
+        </a>
+        <a href="/projects/desktop-pet" class="featured-card" style="text-decoration:none;color:inherit;">
+          <div class="card-label">兴趣</div>
+          <h3>DesktopPet · 桌面宠物</h3>
+          <p>基于桌面的虚拟宠物应用，融合游戏化习惯追踪与交互设计</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Blog -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">最新文章</h2>
+      <div class="featured-grid">
+        <div class="featured-card" style="opacity:0.6;">
+          <div class="card-label">诙谐科普</div>
+          <h3>内容准备中……</h3>
+          <p>技术博客和科普文章将陆续上线</p>
+        </div>
+        <div class="featured-card" style="opacity:0.6;">
+          <div class="card-label">技术笔记</div>
+          <h3>内容准备中……</h3>
+          <p>STM32 外设库笔记将精选录入</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
