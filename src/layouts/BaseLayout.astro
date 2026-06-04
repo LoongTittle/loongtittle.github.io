@@ -8,9 +8,8 @@ export interface Props {
   currentPath?: string;
 }
 
-const { title, description = '杨常卿 · 嵌入式工程师个人网站', currentPath = '/' } = Astro.props;
+const { title, description = '杨常卿 · 嵌入式工程师', currentPath = '/' } = Astro.props;
 
-// 只显示有内容的页面
 const navItems = [
   { href: '/', label: '首页' },
   { href: '/about', label: '关于' },
@@ -29,22 +28,17 @@ const navItems = [
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <title>{title} — 杨常卿</title>
+    <title>{title}</title>
     <slot name="head" />
   </head>
   <body>
     <nav class="nav">
       <div class="container nav-inner">
         <a href="/" class="nav-logo">杨常卿</a>
-        <ul class="nav-links">
+        <button class="nav-toggle" aria-label="菜单" id="nav-toggle">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links" id="nav-links">
           {navItems.map((item) => {
             const isActive = currentPath === item.href ||
               (item.href !== '/' && currentPath.startsWith(item.href));
@@ -74,5 +68,11 @@ const navItems = [
     </footer>
 
     <GestureControl />
+
+    <script>
+      document.getElementById('nav-toggle')?.addEventListener('click', () => {
+        document.getElementById('nav-links')?.classList.toggle('open');
+      });
+    </script>
   </body>
 </html>

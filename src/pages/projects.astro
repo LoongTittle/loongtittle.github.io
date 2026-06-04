@@ -5,47 +5,63 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="项目" currentPath="/projects">
   <slot name="head">
     <style>
-      .page { padding: 3rem 0; }
+      .page { padding: 2.5rem 0; }
       .page h1 { margin-bottom: 1.5rem; }
 
-      .project-list { display: grid; gap: 1.25rem; }
-      .project-card {
+      .project-hero {
         display: block;
-        background: var(--bg-card);
+        background: linear-gradient(135deg, var(--bg-card), rgba(37,99,235,0.02));
         border: 1px solid var(--border-light);
-        border-radius: var(--radius-md);
-        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        padding: 2rem;
         text-decoration: none;
         color: inherit;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        transition: all 0.3s var(--ease-out);
+        position: relative;
+        overflow: hidden;
       }
-      .project-card:hover {
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
+      .project-hero::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), #7c3aed, transparent);
+        opacity: 0;
+        transition: opacity 0.3s;
       }
-      .project-card h2 { font-size: 1.125rem; margin: 0 0 0.3rem; }
-      .project-card .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
-      .project-card p { font-size: 0.875rem; color: var(--text-secondary); margin: 0; line-height: 1.6; }
-      .project-card .status { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+      .project-hero:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+        border-color: var(--accent-subtle);
+      }
+      .project-hero:hover::before { opacity: 1; }
+
+      .project-hero .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+      .project-hero h2 { font-size: 1.2rem; margin: 0 0 0.5rem; }
+      .project-hero p { font-size: 0.88rem; color: var(--text-secondary); margin: 0; line-height: 1.7; }
+      .project-hero .foot { margin-top: 1rem; font-size: 0.82rem; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 0.3rem; }
+      .project-hero .foot .arrow { transition: transform 0.2s; }
+      .project-hero:hover .foot .arrow { transform: translateX(4px); }
+      .project-hero .meta { font-size: 0.78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 0.5rem; }
     </style>
   </slot>
 
   <div class="page fade-in">
     <div class="content-container">
       <h1>项目</h1>
-      <div class="project-list">
-        <a href="/projects/embedded-lab/" class="project-card">
-          <div class="meta">
-            <span class="tag">STM32F407</span>
-            <span class="tag">C</span>
-            <span class="tag">UART</span>
-            <span class="tag">SysTick</span>
-          </div>
-          <h2>串口命令控制 LED 系统</h2>
-          <p>基于 STM32F407 的非阻塞 LED 控制系统。串口命令实时控制 LED 颜色与模式，三层模块化架构（BSP/App/User），UART 中断 + 环形缓冲区 FIFO，SysTick 非阻塞延时。</p>
-          <div class="status">嵌入式工程实验室 · 持续建设中</div>
-        </a>
-      </div>
+
+      <a href="/projects/embedded-lab/" class="project-hero">
+        <div class="tags">
+          <span class="tag">STM32F407</span>
+          <span class="tag">C</span>
+          <span class="tag">UART</span>
+          <span class="tag">SysTick</span>
+        </div>
+        <h2>串口命令控制 LED 系统</h2>
+        <p>基于 STM32F407 的非阻塞 LED 控制系统。串口命令实时控制 LED 颜色与模式，三层模块化架构（BSP/App/User），UART 中断 + 环形缓冲区 FIFO，SysTick 非阻塞延时。</p>
+        <div class="foot">查看项目详情 <span class="arrow">→</span></div>
+        <div class="meta">EmbeddedLab · 个人嵌入式工程实验室</div>
+      </a>
     </div>
   </div>
 </BaseLayout>

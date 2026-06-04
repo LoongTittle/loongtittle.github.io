@@ -6,87 +6,104 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <slot name="head">
     <style>
       .page { padding: 3rem 0; }
-      .page h1 { margin-bottom: 0.5rem; }
-      .subtitle { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2rem; }
+      .page-head { margin-bottom: 2.5rem; }
+      .page-head h1 { margin-bottom: 0.25rem; }
+      .page-head .subtitle { color: var(--text-secondary); font-size: 1.05rem; }
 
-      .section { margin-bottom: 2.5rem; }
-      .section h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+      .intro-text { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.8; }
+      .intro-text strong { color: var(--text-primary); }
 
-      .timeline { position: relative; padding-left: 1.5rem; }
+      .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+      .tag-cloud .tag { font-size: 0.82rem; padding: 0.25rem 0.75rem; }
+      .tag-cloud .tag-accent { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+      .timeline { position: relative; padding-left: 1.75rem; }
       .timeline::before {
         content: '';
-        position: absolute; left: 0; top: 0; bottom: 0;
-        width: 2px; background: var(--border);
+        position: absolute; left: 7px; top: 4px; bottom: 4px;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--accent), var(--accent-subtle), transparent);
+        border-radius: 2px;
       }
-      .timeline-item { position: relative; padding-bottom: 1.25rem; }
+      .timeline-item {
+        position: relative; padding-bottom: 1.5rem;
+        padding-left: 0.5rem;
+      }
+      .timeline-item:last-child { padding-bottom: 0; }
       .timeline-item::before {
         content: '';
-        position: absolute; left: -1.5rem; top: 0.35rem;
-        width: 10px; height: 10px; border-radius: 50%;
-        background: var(--accent); border: 2px solid var(--bg-primary);
+        position: absolute; left: -1.75rem; top: 0.4rem;
+        width: 16px; height: 16px; border-radius: 50%;
+        background: var(--bg-card);
+        border: 3px solid var(--accent);
         transform: translateX(-50%);
       }
-      .timeline-item .date { font-size: 0.8rem; color: var(--accent); font-weight: 600; font-family: var(--font-mono); }
+      .timeline-item.current::before { background: var(--accent); }
+      .timeline-item .date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem; color: var(--accent); font-weight: 600;
+      }
       .timeline-item h3 { font-size: 1rem; margin: 0.1rem 0 0.2rem; }
-      .timeline-item p { font-size: 0.875rem; color: var(--text-secondary); margin: 0; }
+      .timeline-item p { font-size: 0.88rem; color: var(--text-secondary); margin: 0; }
 
-      .principles { display: grid; gap: 1rem; }
+      .principle-grid { display: grid; gap: 0.75rem; }
       .principle-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-light);
+        background: var(--bg-card); border: 1px solid var(--border-light);
+        border-radius: var(--radius-md); padding: 1.25rem;
+        transition: box-shadow 0.2s;
+      }
+      .principle-card:hover { box-shadow: var(--shadow-sm); }
+      .principle-card h3 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+      .principle-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+      .quote-box {
+        background: linear-gradient(135deg, var(--accent-light), var(--bg-card));
+        border: 1px solid var(--accent-subtle);
         border-radius: var(--radius-md);
-        padding: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        margin-top: 1.25rem;
       }
-      .principle-card h3 { font-size: 1rem; margin-bottom: 0.3rem; }
-      .principle-card p { font-size: 0.875rem; color: var(--text-secondary); margin: 0; }
+      .quote-box p { margin: 0; font-style: italic; color: var(--text-secondary); font-size: 0.92rem; }
+      .quote-box .attribution { font-style: normal; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; font-family: 'JetBrains Mono', monospace; }
 
-      .quote-block {
-        border-left: 3px solid var(--accent);
-        padding: 1rem 1.25rem;
-        background: var(--bg-card);
-        border-radius: 0 var(--radius-md) var(--radius-md) 0;
-        margin: 1.5rem 0;
+      @media (max-width: 768px) {
+        .page { padding: 2rem 0; }
       }
-      .quote-block p { margin: 0; font-style: italic; color: var(--text-secondary); font-size: 0.95rem; }
-
-      .tags-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
     </style>
   </slot>
 
   <div class="page fade-in">
     <div class="content-container">
-      <h1>关于我</h1>
-      <p class="subtitle">
-        杨常卿 · 嵌入式软件工程师（无人机/机器人方向）·
-        控制工程 · 黑龙江大学
-      </p>
 
-      <!-- 简介 -->
-      <div class="section">
-        <p>
-          我是杨常卿，目前处于<strong>研0工程化建设期</strong>（2026.06 — 2026.09），即将于 2026 年 9 月进入
-          黑龙江大学控制工程专业攻读硕士。目标是成为一名优秀的嵌入式软件工程师，专注于无人机与机器人方向。
-        </p>
-        <p>
-          我致力于从「学生思维」向「工程师思维」的转变——不只是学知识点，而是做真正的项目，
-          沉淀可复用、可追溯的知识体系。每完成一个模块，都配套设计文档与开发日志。
-        </p>
+      <div class="page-head">
+        <h1>关于我</h1>
+        <div class="subtitle">
+          杨常卿 · 嵌入式软件工程师 · 黑龙江大学
+        </div>
       </div>
 
-      <!-- 技术栈 -->
-      <div class="section">
+      <!-- Intro -->
+      <div class="page-section">
+        <div class="intro-text">
+          <p>
+            我是杨常卿，目前处于<strong>研0工程化建设期</strong>（2026.06 – 2026.09），
+            即将进入黑龙江大学控制工程专业攻读硕士。目标是嵌入式软件工程师，
+            专注于无人机与机器人方向。
+          </p>
+          <p>
+            我致力于从「学生思维」向「工程师思维」的转变——
+            不只是学知识点，而是做真正的项目，沉淀可复用、可追溯的知识体系。
+          </p>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="page-section">
         <h2>⚙️ 技术栈</h2>
-        <div class="tags-cloud">
-          <span class="tag">C（熟练）</span>
-          <span class="tag">C++（基础）</span>
-          <span class="tag">Python（基础）</span>
+        <div class="tag-cloud">
+          <span class="tag tag-accent">C（熟练）</span>
+          <span class="tag">C++</span>
+          <span class="tag">Python</span>
           <span class="tag">STM32</span>
           <span class="tag">标准外设库</span>
           <span class="tag">GPIO</span>
@@ -97,11 +114,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
-      <!-- 时间线 -->
-      <div class="section">
+      <!-- Timeline -->
+      <div class="page-section">
         <h2>📌 时间线</h2>
         <div class="timeline">
-          <div class="timeline-item">
+          <div class="timeline-item current">
             <div class="date">2026.06 – 2026.09</div>
             <h3>研0工程化建设期</h3>
             <p>嵌入式系统深入学习、项目积累、从学生到工程师的思维转型</p>
@@ -109,20 +126,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <div class="timeline-item">
             <div class="date">2026.09 – 2029.06</div>
             <h3>黑龙江大学 · 控制工程 · 硕士</h3>
-            <p>无人机 / 机器人方向，深度学习与工程实践并行</p>
+            <p>无人机 / 机器人方向，工程实践与理论研究并行</p>
           </div>
           <div class="timeline-item">
             <div class="date">2022.09 – 2026.06</div>
             <h3>黑龙江大学 · 自动化 · 本科</h3>
-            <p>打下控制理论与嵌入式开发基础</p>
+            <p>控制理论与嵌入式开发基础</p>
           </div>
         </div>
       </div>
 
-      <!-- 人生原则 -->
-      <div class="section">
+      <!-- Principles -->
+      <div class="page-section">
         <h2>🧭 原则</h2>
-        <div class="principles">
+        <div class="principle-grid">
           <div class="principle-card">
             <h3>积极主动</h3>
             <p>不是被动响应外部事件，而是主动规划、主动选择、主动承担责任。</p>
@@ -132,10 +149,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <p>从想要的结果倒推现在该做什么。每一阶段都有清晰的目标节点。</p>
           </div>
         </div>
-        <div class="quote-block">
-          <p>用研究生开始前的这段时间，把自己从「学生思维」升级成「工程师思维」。</p>
+        <div class="quote-box">
+          <p>"用研究生开始前的这段时间，把自己从「学生思维」升级成「工程师思维」。"</p>
+          <div class="attribution">// 人生原则</div>
         </div>
       </div>
+
     </div>
   </div>
 </BaseLayout>

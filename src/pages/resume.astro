@@ -5,56 +5,46 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="简历" currentPath="/resume">
   <slot name="head">
     <style>
-      .page { padding: 3rem 0; }
-      .page h1 { margin-bottom: 0.25rem; }
-      .subtitle { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 0.5rem; }
-      .meta-line { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem; }
+      .page { padding: 2.5rem 0; }
+      .page-head { margin-bottom: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 1rem; }
+      .page-head h1 { margin-bottom: 0.1rem; }
+      .page-head .sub { color: var(--text-secondary); font-size: 1rem; }
+      .page-head .meta-line { color: var(--text-muted); font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; margin-top: 0.2rem; }
 
-      .section { margin-bottom: 2rem; }
-      .section h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        padding-bottom: 0.4rem;
-        border-bottom: 2px solid var(--accent);
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .info-grid {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 0.3rem 1.5rem;
-        font-size: 0.9rem;
-      }
+      .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1.5rem; font-size: 0.9rem; }
       .info-grid .label { color: var(--text-muted); font-weight: 500; white-space: nowrap; }
       .info-grid .value { color: var(--text-primary); }
 
-      .skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-      .skill-group { margin-bottom: 0.75rem; }
-      .skill-group .cat { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; }
-      .skill-group .items { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+      .skill-area { margin-bottom: 0.75rem; }
+      .skill-area .cat { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; font-family: 'JetBrains Mono', monospace; }
+      .skill-area .items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
-      .project { margin-bottom: 1.5rem; }
-      .project h3 { font-size: 1rem; margin: 0 0 0.2rem; }
-      .project .tech { font-size: 0.8rem; color: var(--accent); font-family: var(--font-mono); margin-bottom: 0.5rem; }
-      .project p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
-      .project ul { font-size: 0.875rem; color: var(--text-secondary); padding-left: 1.25rem; }
-      .project ul li { margin-bottom: 0.15rem; }
+      .project-block { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-md); }
+      .project-block h3 { font-size: 1rem; margin: 0 0 0.15rem; }
+      .project-block .tech-stack { font-size: 0.78rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 0.5rem; }
+      .project-block p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+      .project-block ul { font-size: 0.84rem; color: var(--text-secondary); padding-left: 1.2rem; }
+      .project-block ul li { margin-bottom: 0.15rem; }
 
-      .eval { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; padding: 1rem; background: var(--bg-muted); border-radius: var(--radius-md); }
+      .eval-box {
+        font-size: 0.88rem; color: var(--text-secondary); line-height: 1.8;
+        padding: 1rem 1.25rem;
+        background: linear-gradient(135deg, var(--bg-muted), var(--bg-card));
+        border: 1px solid var(--border-light); border-radius: var(--radius-md);
+      }
     </style>
   </slot>
 
   <div class="page fade-in">
     <div class="content-container">
-      <h1>杨常卿</h1>
-      <p class="subtitle">嵌入式软件工程师 · 求职意向</p>
-      <p class="meta-line">2029 届硕士 · 黑龙江大学 · 控制工程</p>
 
-      <!-- 教育背景 -->
-      <div class="section">
+      <div class="page-head">
+        <h1>杨常卿</h1>
+        <div class="sub">嵌入式软件工程师 · 求职意向</div>
+        <div class="meta-line">2029 届硕士 · 黑龙江大学 · 控制工程</div>
+      </div>
+
+      <div class="page-section">
         <h2>🎓 教育背景</h2>
         <div class="info-grid">
           <span class="label">2026.09 – 2029.06</span>
@@ -64,69 +54,65 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
-      <!-- 专业技能 -->
-      <div class="section">
+      <div class="page-section">
         <h2>🔧 专业技能</h2>
-        <div class="skills">
-          <div class="skill-group">
-            <div class="cat">编程语言</div>
-            <div class="items">
-              <span class="tag">C（熟练）</span>
-              <span class="tag">C++（基础）</span>
-              <span class="tag">Python（基础）</span>
-            </div>
+        <div class="skill-area">
+          <div class="cat">编程语言</div>
+          <div class="items">
+            <span class="tag">C（熟练）</span>
+            <span class="tag">C++（基础）</span>
+            <span class="tag">Python（基础）</span>
           </div>
-          <div class="skill-group">
-            <div class="cat">MCU 开发</div>
-            <div class="items">
-              <span class="tag">STM32（标准外设库）</span>
-              <span class="tag">GPIO</span>
-              <span class="tag">UART</span>
-              <span class="tag">SysTick</span>
-            </div>
+        </div>
+        <div class="skill-area">
+          <div class="cat">MCU 开发</div>
+          <div class="items">
+            <span class="tag">STM32（标准外设库）</span>
+            <span class="tag">GPIO</span>
+            <span class="tag">UART</span>
+            <span class="tag">SysTick</span>
           </div>
-          <div class="skill-group">
-            <div class="cat">工具链</div>
-            <div class="items">
-              <span class="tag">Keil MDK</span>
-              <span class="tag">Git</span>
-            </div>
+        </div>
+        <div class="skill-area">
+          <div class="cat">工具链</div>
+          <div class="items">
+            <span class="tag">Keil MDK</span>
+            <span class="tag">Git</span>
           </div>
-          <div class="skill-group">
-            <div class="cat">工程习惯</div>
-            <div class="items">
-              <span class="tag">模块化分层架构</span>
-              <span class="tag">开发文档与知识沉淀</span>
-              <span class="tag">非阻塞编程思维</span>
-            </div>
+        </div>
+        <div class="skill-area">
+          <div class="cat">工程习惯</div>
+          <div class="items">
+            <span class="tag">模块化分层架构</span>
+            <span class="tag">开发文档与知识沉淀</span>
+            <span class="tag">非阻塞编程思维</span>
           </div>
         </div>
       </div>
 
-      <!-- 项目经历 -->
-      <div class="section">
+      <div class="page-section">
         <h2>🚀 项目经历</h2>
-
-        <div class="project">
+        <div class="project-block">
           <h3>串口命令控制 LED 系统</h3>
-          <div class="tech">C · STM32F407 · Keil MDK · 标准外设库</div>
+          <div class="tech-stack">C · STM32F407 · Keil MDK · 标准外设库</div>
           <p>基于 STM32F407 实现的非阻塞 LED 控制系统，支持通过串口命令实时控制 LED 颜色与模式。</p>
           <ul>
             <li><strong>架构设计：</strong>BSP/App/User 三层模块化架构，各层职责明确，模块可复用</li>
             <li><strong>中断接收：</strong>UART 中断（RXNE）+ 环形缓冲区 FIFO，ISR 只存不处理，主循环消费，零丢数据</li>
-            <li><strong>系统时钟：</strong>配置 SysTick 1ms 中断，提供 Tick_Get / Tick_Elapsed 非阻塞延时 API，实现多任务并行调度</li>
+            <li><strong>系统时钟：</strong>SysTick 1ms 中断，提供 Tick_Get / Tick_Elapsed 非阻塞延时 API，实现多任务并行调度</li>
             <li><strong>命令解析：</strong>字符串命令引擎（strncmp + sscanf），支持 8+ 种颜色控制及 help/status 指令</li>
           </ul>
         </div>
       </div>
 
-      <!-- 自我评价 -->
-      <div class="section">
+      <div class="page-section">
         <h2>🧭 自我评价</h2>
-        <div class="eval">
-          目标嵌入式软件工程师。注重工程实践与知识沉淀，每完成一个模块均配套设计文档与开发日志，确保可追溯可复用。具备独立驱动开发和问题排查能力，善于从底层理解硬件行为。
+        <div class="eval-box">
+          目标嵌入式软件工程师。注重工程实践与知识沉淀，每完成一个模块均配套设计文档与开发日志，
+          确保可追溯可复用。具备独立驱动开发和问题排查能力，善于从底层理解硬件行为。
         </div>
       </div>
+
     </div>
   </div>
 </BaseLayout>

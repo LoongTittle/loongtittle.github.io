@@ -2,141 +2,225 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="项目 — EmbeddedLab · LED 控制系统" currentPath="/projects">
+<BaseLayout title="EmbeddedLab · LED 控制系统" currentPath="/projects">
   <slot name="head">
     <style>
-      .page { padding: 3rem 0; }
-      .page h1 { margin-bottom: 0.25rem; }
+      .page { padding: 2.5rem 0; }
+      .page-head { margin-bottom: 2.5rem; }
+      .page-head h1 { margin-bottom: 0.25rem; }
+      .page-head .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
 
-      .meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+      /* STAR cards with colored tops */
+      .star-grid { display: grid; gap: 1rem; }
+      .star-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+      }
+      .star-card:hover { box-shadow: var(--shadow-sm); }
+      .star-card .bar { height: 3px; }
+      .star-card .body { padding: 1.1rem 1.25rem; }
+      .star-card .label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+        margin-bottom: 0.4rem;
+      }
+      .star-card p { font-size: 0.88rem; color: var(--text-secondary); margin: 0; line-height: 1.7; }
+      .star-card code { font-size: 0.82em; }
 
-      .section { margin-bottom: 2.5rem; }
-      .section h2 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        padding-bottom: 0.4rem;
-        border-bottom: 2px solid var(--accent);
-        margin-bottom: 1rem;
+      .bar-s { background: #16a34a; }
+      .bar-t { background: #ea580c; }
+      .bar-a { background: #2563eb; }
+      .bar-r { background: #dc2626; }
+      .label-s { color: #16a34a; }
+      .label-t { color: #ea580c; }
+      .label-a { color: #2563eb; }
+      .label-r { color: #dc2626; }
+
+      .arch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+      .arch-card {
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: box-shadow 0.2s, transform 0.2s;
+      }
+      .arch-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+      .arch-card h3 {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.82rem;
+        background: var(--bg-muted);
+        padding: 0.5rem 0.75rem;
+        margin: 0;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .arch-card p {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        padding: 0.75rem;
+        margin: 0;
+        line-height: 1.6;
       }
 
-      .star-grid { display: grid; gap: 1.25rem; }
-      .star-item { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1.25rem; }
-      .star-item .label { font-size: 0.75rem; font-weight: 600; color: var(--accent); font-family: var(--font-mono); margin-bottom: 0.3rem; letter-spacing: 0.04em; }
-      .star-item .label-s { color: #2f9e44; }
-      .star-item .label-t { color: #e67700; }
-      .star-item .label-a { color: #1c7ed6; }
-      .star-item .label-r { color: #c92a2a; }
-      .star-item p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.7; }
+      .spec-grid { display: grid; gap: 0.75rem; }
+      .spec-row {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .spec-row:last-child { border-bottom: none; }
+      .spec-row .label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        min-width: 80px;
+        flex-shrink: 0;
+      }
+      .spec-row .value {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
 
-      .architecture { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-      .arch-layer { border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
-      .arch-layer h3 { font-size: 0.85rem; background: var(--bg-muted); padding: 0.5rem 0.75rem; margin: 0; font-family: var(--font-mono); }
-      .arch-layer p { font-size: 0.82rem; color: var(--text-secondary); padding: 0.75rem; margin: 0; }
+      .principle-list { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
+      .principle-list li {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        padding: 0.6rem 1rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--accent);
+      }
 
-      .specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-      .spec-item { border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem; }
-      .spec-item .label { font-size: 0.8rem; color: var(--text-muted); }
-      .spec-item .value { font-size: 0.9rem; font-weight: 500; }
-
-      .principles { list-style: none; padding: 0; display: grid; gap: 0.75rem; }
-      .principles li { font-size: 0.9rem; color: var(--text-secondary); padding-left: 1.5rem; position: relative; }
-      .principles li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 600; }
+      .page-foot {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-light);
+        margin-top: 2rem;
+        font-family: 'JetBrains Mono', monospace;
+      }
 
       @media (max-width: 768px) {
-        .architecture { grid-template-columns: 1fr; }
-        .specs { grid-template-columns: 1fr; }
+        .arch-grid { grid-template-columns: 1fr; }
       }
     </style>
   </slot>
 
   <div class="page fade-in">
     <div class="content-container">
-      <h1>串口命令控制 LED 系统</h1>
-      <div class="meta">
-        <span class="tag">STM32F407</span>
-        <span class="tag">C</span>
-        <span class="tag">Keil MDK</span>
-        <span class="tag">标准外设库</span>
-        <span class="tag">UART</span>
-        <span class="tag">SysTick</span>
+
+      <div class="page-head">
+        <h1>串口命令控制 LED 系统</h1>
+        <div class="meta">
+          <span class="tag">STM32F407</span>
+          <span class="tag">C</span>
+          <span class="tag">Keil MDK</span>
+          <span class="tag">标准外设库</span>
+          <span class="tag">UART</span>
+          <span class="tag">SysTick</span>
+        </div>
       </div>
 
       <!-- STAR -->
-      <div class="section">
+      <div class="page-section">
         <h2>📋 项目概述</h2>
         <div class="star-grid">
-          <div class="star-item">
-            <div class="label label-s">S · 情境</div>
-            <p>传统单片机教学多采用阻塞式延时（<code>delay_ms</code>），CPU 被空循环占用，无法同时处理串口通信、按键响应等多任务需求。初版 V1.0 仅支持按键切换 LED，架构简单、不可扩展。</p>
+          <div class="star-card">
+            <div class="bar bar-s"></div>
+            <div class="body">
+              <div class="label label-s">S · 情境</div>
+              <p>传统单片机教学多采用阻塞式延时（<code>delay_ms</code>），CPU 被空循环占用。初版仅支持按键切换 LED，架构不可扩展。</p>
+            </div>
           </div>
-          <div class="star-item">
-            <div class="label label-t">T · 任务</div>
-            <p>设计并实现基于 STM32F407 的<strong>非阻塞 LED 控制系统</strong>，支持串口命令实时控制，并建立可复用的嵌入式驱动模块架构。</p>
+          <div class="star-card">
+            <div class="bar bar-t"></div>
+            <div class="body">
+              <div class="label label-t">T · 任务</div>
+              <p>设计<strong>非阻塞 LED 控制系统</strong>，支持串口命令实时控制，建立可复用的驱动模块架构。</p>
+            </div>
           </div>
-          <div class="star-item">
-            <div class="label label-a">A · 行动</div>
-            <p>
-              设计分层架构（BSP 硬件抽象层 / App 应用逻辑层 / User 顶层胶合层），实现模块解耦；<br />
-              UART 中断接收 + 环形缓冲区 FIFO，ISR 只存不处理，主循环消费；<br />
-              配置 SysTick 1ms 中断，提供非阻塞延时 API，实现多任务并行调度；<br />
-              字符串命令解析引擎，支持 8+ 颜色控制及 help/status 指令。
-            </p>
+          <div class="star-card">
+            <div class="bar bar-a"></div>
+            <div class="body">
+              <div class="label label-a">A · 行动</div>
+              <p>
+                分层架构（BSP/App/User）实现模块解耦；UART 中断 + 环形缓冲区 FIFO 零丢数据；
+                SysTick 1ms 中断提供非阻塞延时；命令解析引擎支持 8+ 颜色控制。
+              </p>
+            </div>
           </div>
-          <div class="star-item">
-            <div class="label label-r">R · 结果</div>
-            <p>
-              LED 闪烁期间串口命令秒回，<strong>零阻塞</strong>验证通过；<br />
-              串口 help 实时打印命令列表，系统可交互操作；<br />
-              模块化架构可在后续项目直接复用；<br />
-              全程配套开发指南 + 开发日志 + 科普文章，形成完整知识沉淀。
-            </p>
+          <div class="star-card">
+            <div class="bar bar-r"></div>
+            <div class="body">
+              <div class="label label-r">R · 结果</div>
+              <p>
+                <strong>零阻塞</strong>验证通过，串口命令秒回；模块化架构可直接复用；全程配套开发指南与文档沉淀。
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 架构 -->
-      <div class="section">
+      <!-- Architecture -->
+      <div class="page-section">
         <h2>🏗️ 架构设计</h2>
-        <div class="architecture">
-          <div class="arch-layer">
-            <h3>User 层</h3>
+        <div class="arch-grid">
+          <div class="arch-card">
+            <h3>User</h3>
             <p>顶层胶合逻辑，初始化各模块、主循环任务调度、命令路由</p>
           </div>
-          <div class="arch-layer">
-            <h3>App 层</h3>
+          <div class="arch-card">
+            <h3>App</h3>
             <p>应用逻辑层，命令解析引擎、LED 模式管理、状态机调度</p>
           </div>
-          <div class="arch-layer">
-            <h3>BSP 层</h3>
+          <div class="arch-card">
+            <h3>BSP</h3>
             <p>硬件抽象层，bsp_led / bsp_usart / bsp_systick / bsp_fifo，封装寄存器操作</p>
           </div>
         </div>
       </div>
 
-      <!-- 技术要点 -->
-      <div class="section">
+      <!-- Tech Specs -->
+      <div class="page-section">
         <h2>⚙️ 技术要点</h2>
-        <div class="specs">
-          <div class="spec-item"><div class="label">中断接收</div><div class="value">UART RXNE 中断 + 环形缓冲区，零丢数据</div></div>
-          <div class="spec-item"><div class="label">非阻塞延时</div><div class="value">SysTick 1ms 中断，提供 Tick_Get / Tick_Elapsed API</div></div>
-          <div class="spec-item"><div class="label">命令解析</div><div class="value">strncmp + sscanf 引擎，支持 8+ 颜色指令</div></div>
-          <div class="spec-item"><div class="label">模块封装</div><div class="value">各外设独立 .c/.h，接口明确、隐藏实现</div></div>
+        <div class="spec-grid">
+          <div class="spec-row">
+            <span class="label">中断接收</span>
+            <span class="value">UART RXNE 中断 + 环形缓冲区，ISR 只存不处理，零丢数据</span>
+          </div>
+          <div class="spec-row">
+            <span class="label">非阻塞延时</span>
+            <span class="value">SysTick 1ms 中断，提供 Tick_Get / Tick_Elapsed API</span>
+          </div>
+          <div class="spec-row">
+            <span class="label">命令解析</span>
+            <span class="value">strncmp + sscanf 引擎，支持 8+ 颜色指令及 help/status</span>
+          </div>
+          <div class="spec-row">
+            <span class="label">模块封装</span>
+            <span class="value">各外设独立 .c/.h，接口明确、隐藏实现</span>
+          </div>
         </div>
       </div>
 
-      <!-- 设计原则 -->
-      <div class="section">
+      <!-- Principles -->
+      <div class="page-section">
         <h2>🧭 设计原则</h2>
-        <ul class="principles">
+        <ul class="principle-list">
           <li>不是临时应付，是长期积累</li>
           <li>不是「学生作业」思维，是「企业工程师」标准</li>
           <li>每个模块配套文档 + 日志 + 科普，确保可追溯可复用</li>
         </ul>
       </div>
 
-      <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding-top:2rem; border-top:1px solid var(--border-light);">
-        EmbeddedLab · 个人嵌入式工程实验室 · 持续建设中
-      </p>
+      <div class="page-foot">
+        EmbeddedLab · 个人嵌入式工程实验室
+      </div>
     </div>
   </div>
 </BaseLayout>
