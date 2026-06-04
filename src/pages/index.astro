@@ -199,16 +199,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <section class="section">
     <div class="container">
       <h2 class="section-title">精选项目</h2>
-      <div class="featured-grid">
+      <div class="featured-grid" style="grid-template-columns:1fr;">
         <a href="/projects/embedded-lab" class="featured-card" style="text-decoration:none;color:inherit;">
           <div class="card-label">嵌入式</div>
           <h3>EmbeddedLab · LED 控制系统</h3>
           <p>STM32 标准外设库开发，串口命令控制 LED，涵盖 GPIO / USART / TIM 等多外设协同</p>
-        </a>
-        <a href="/projects/desktop-pet" class="featured-card" style="text-decoration:none;color:inherit;">
-          <div class="card-label">兴趣</div>
-          <h3>DesktopPet · 桌面宠物</h3>
-          <p>基于桌面的虚拟宠物应用，融合游戏化习惯追踪与交互设计</p>
         </a>
       </div>
     </div>

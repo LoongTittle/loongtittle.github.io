@@ -48,7 +48,6 @@ const CONTENT_TYPES = {
     label: '项目文档',
     sources: [
       { dir: join(VAULT_PATH, '6-项目', 'EmbeddedLab'), recursive: true, filter: (f) => f.endsWith('.md') && !f.includes('开发日志') && !f.includes('Day') },
-      { dir: join(VAULT_PATH, '6-项目', 'DesktopPet'), recursive: true, filter: (f) => f.endsWith('.md') && basename(f).startsWith('DesktopPet') },
     ],
     target: join(SITE_PATH, 'src', 'content', 'projects'),
     layout: '../../layouts/ProjectLayout.astro',
