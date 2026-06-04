@@ -1,0 +1,267 @@
+---
+/**
+ * GestureControl.astro
+ * 摄像头手势识别组件 — 用手势替代鼠标
+ * 基于 MediaPipe Hands（CDN 加载）
+ *
+ * 手势映射：
+ *   👆 食指移动 → 光标移动
+ *   🤏 拇指+食指捏合 → 左键点击
+ *   ✌️ 食指+中指分开 → 滚动
+ *   🖐️ 五指张开 → 退出（按 Esc 也可）
+ *
+ * 用法：在 BaseLayout 中引入 <GestureControl />
+ */
+
+interface Props {
+  enabled?: boolean;
+}
+const { enabled = false } = Astro.props;
+---
+
+<div id="gesture-control">
+  <button id="gesture-toggle" class="gesture-toggle" title="启用/禁用手势控制">
+    <span class="toggle-icon">🖐️</span>
+    <span class="toggle-label">手势</span>
+  </button>
+
+  <video id="gesture-video" class="gesture-video" playsinline></video>
+
+  <div id="gesture-cursor" class="gesture-cursor" aria-hidden="true"></div>
+  <div id="gesture-toast" class="gesture-toast" aria-live="polite"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+
+<style>
+  .gesture-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border, #dee2e6);
+    border-radius: 999px;
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #495057);
+    font-family: var(--font-sans, system-ui);
+    font-size: 0.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .gesture-toggle:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+  .gesture-toggle.active {
+    background: var(--accent, #2b6cb0);
+    color: #fff;
+    border-color: var(--accent, #2b6cb0);
+  }
+  .toggle-icon { font-size: 1.1rem; line-height: 1; }
+
+  .gesture-video {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    width: 320px;
+    height: 240px;
+    transform: scaleX(-1);
+  }
+  .gesture-video.show-preview {
+    top: auto;
+    bottom: 4.5rem;
+    right: 1.5rem;
+    left: auto;
+    width: 160px;
+    height: 120px;
+    border-radius: 8px;
+    border: 1px solid var(--border, #dee2e6);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    z-index: 9998;
+    object-fit: cover;
+  }
+
+  .gesture-cursor {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--accent, #2b6cb0);
+    border-radius: 50%;
+    background: rgba(43,108,176,0.1);
+    transition: width 0.15s, height 0.15s, background 0.15s;
+  }
+  .gesture-cursor.active { display: block; }
+  .gesture-cursor.clicking {
+    width: 16px;
+    height: 16px;
+    background: rgba(43,108,176,0.35);
+    border-width: 3px;
+  }
+
+  .gesture-toast {
+    position: fixed;
+    bottom: 5rem;
+    right: 1.5rem;
+    z-index: 9997;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: var(--text-primary, #1a1a2e);
+    color: #fff;
+    font-size: 0.8rem;
+    font-family: var(--font-sans, system-ui);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    max-width: 240px;
+  }
+  .gesture-toast.show { opacity: 1; transform: translateY(0); }
+</style>
+
+<script>
+(function() {
+  const toggleBtn = document.getElementById('gesture-toggle');
+  const videoEl = document.getElementById('gesture-video');
+  const cursorEl = document.getElementById('gesture-cursor');
+  const toastEl = document.getElementById('gesture-toast');
+
+  let isActive = false;
+  let camera = null;
+  let handsInstance = null;
+  let cursorX = window.innerWidth / 2;
+  let cursorY = window.innerHeight / 2;
+  let isClicking = false;
+
+  function showToast(msg, duration) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._timer);
+    toastEl._timer = setTimeout(() => toastEl.classList.remove('show'), duration || 2000);
+  }
+
+  function onResults(results) {
+    if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+      cursorEl.style.opacity = '0';
+      return;
+    }
+
+    cursorEl.style.opacity = '1';
+    const lm = results.multiHandLandmarks[0];
+
+    // 食指(8) 拇指(4) 中指(12)
+    const indexTip = lm[8];
+    const thumbTip = lm[4];
+    const middleTip = lm[12];
+
+    // 光标移动 — 低通滤波平滑
+    const tx = (1 - indexTip.x) * window.innerWidth;
+    const ty = indexTip.y * window.innerHeight;
+    cursorX += (tx - cursorX) * 0.55;
+    cursorY += (ty - cursorY) * 0.55;
+    cursorEl.style.left = cursorX + 'px';
+    cursorEl.style.top = cursorY + 'px';
+
+    // 捏合检测 (点击)
+    const pinch = Math.hypot(
+      (thumbTip.x - indexTip.x) * window.innerWidth,
+      (thumbTip.y - indexTip.y) * window.innerHeight
+    );
+
+    if (pinch < 30 && !isClicking) {
+      isClicking = true;
+      cursorEl.classList.add('clicking');
+      const el = document.elementFromPoint(cursorX, cursorY);
+      if (el) { el.click(); el.dispatchEvent(new MouseEvent('mousedown', {bubbles: true})); }
+    } else if (pinch >= 30 && isClicking) {
+      isClicking = false;
+      cursorEl.classList.remove('clicking');
+      const el = document.elementFromPoint(cursorX, cursorY);
+      if (el) { el.dispatchEvent(new MouseEvent('mouseup', {bubbles: true})); }
+    }
+
+    // 双指滚动
+    const distIM = Math.hypot(
+      (indexTip.x - middleTip.x) * window.innerWidth,
+      (indexTip.y - middleTip.y) * window.innerHeight
+    );
+    if (distIM > 55) {
+      window.scrollBy(0, (middleTip.y - 0.5) * 6);
+    }
+  }
+
+  async function initMediaPipe() {
+    try {
+      handsInstance = new Hands({
+        locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${f}`
+      });
+      handsInstance.setOptions({
+        maxNumHands: 1, modelComplexity: 1,
+        minDetectionConfidence: 0.7, minTrackingConfidence: 0.6
+      });
+      handsInstance.onResults(onResults);
+
+      camera = new Camera(videoEl, {
+        onFrame: async () => {
+          try { await handsInstance.send({image: videoEl}); } catch(e) {}
+        },
+        width: 320, height: 240
+      });
+      await camera.start();
+      return true;
+    } catch(e) {
+      console.warn('Gesture init failed:', e);
+      showToast('摄像头启动失败，请检查权限', 3000);
+      return false;
+    }
+  }
+
+  function cleanup() {
+    if (camera) { try { camera.stop(); } catch(e) {} camera = null; }
+    if (videoEl.srcObject) {
+      videoEl.srcObject.getTracks().forEach(t => t.stop());
+      videoEl.srcObject = null;
+    }
+    if (handsInstance) { handsInstance.close(); handsInstance = null; }
+    videoEl.classList.remove('show-preview');
+    cursorEl.classList.remove('active', 'clicking');
+    cursorEl.style.opacity = '1';
+    toggleBtn.classList.remove('active');
+    isActive = false;
+  }
+
+  async function startGesture() {
+    showToast('启动摄像头中...');
+    const ok = await initMediaPipe();
+    if (!ok) return;
+    isActive = true;
+    toggleBtn.classList.add('active');
+    cursorEl.classList.add('active');
+    // 延迟显示预览
+    setTimeout(() => { if (isActive) videoEl.classList.add('show-preview'); }, 800);
+    showToast('手势控制已启用 · Esc 退出');
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    isActive ? (cleanup(), showToast('手势控制已关闭')) : startGesture();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && isActive) { cleanup(); showToast('手势控制已关闭'); }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && isActive) cleanup();
+  });
+})();
+</script>
