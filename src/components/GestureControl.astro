@@ -1,14 +1,15 @@
 ---
 /**
  * GestureControl.astro
- * 摄像头手势识别组件 — 手势替代鼠标
- * 基于 MediaPipe Hands (CDN)
+ * 摄像头手势识别 — 自动启用 + 跨页面持久化
  *
  * 手势映射：
- *   👆 食指移动 → 光标
- *   🤏 捏合 → 点击
+ *   👆 食指 → 光标移动
+ *   🤏 捏合 → 左键点击
  *   ✌️ 两指分开 → 滚动
  *   Esc 退出
+ *
+ * 状态通过 localStorage 持久化，切换页面自动恢复
  */
 
 interface Props {
@@ -18,7 +19,7 @@ const { enabled = false } = Astro.props;
 ---
 
 <div id="gesture-control">
-  <button id="gesture-toggle" class="gesture-toggle" title="启用手势控制">
+  <button id="gesture-toggle" class="gesture-toggle" title="切换手势控制">
     <span class="toggle-icon">🖐️</span>
     <span class="toggle-label" id="gesture-label">手势</span>
   </button>
@@ -33,92 +34,65 @@ const { enabled = false } = Astro.props;
 
 <style>
   .gesture-toggle {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+    display: flex; align-items: center; gap: 0.35rem;
     padding: 0.5rem 0.9rem;
-    border: 1px solid var(--border, #dee2e6);
-    border-radius: 999px;
+    border: 1px solid var(--border, #dee2e6); border-radius: 999px;
     background: var(--bg-card, #fff);
     color: var(--text-secondary, #495057);
-    font-family: var(--font-sans, system-ui);
-    font-size: 0.8rem;
+    font-family: var(--font-sans, system-ui); font-size: 0.8rem;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: all 0.2s ease;
-    user-select: none;
+    transition: all 0.2s ease; user-select: none;
   }
   .gesture-toggle:hover {
     box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     transform: translateY(-1px);
   }
   .gesture-toggle.active {
-    background: var(--accent, #2b6cb0);
-    color: #fff;
-    border-color: var(--accent, #2b6cb0);
+    background: var(--accent, #2563eb); color: #fff;
+    border-color: var(--accent, #2563eb);
   }
   .gesture-toggle.loading {
-    background: var(--bg-muted, #f0f1f3);
-    pointer-events: none;
-    opacity: 0.7;
+    background: var(--bg-muted, #e9ecef); pointer-events: none; opacity: 0.7;
   }
   .toggle-icon { font-size: 1.1rem; line-height: 1; }
 
   .gesture-video {
-    position: fixed;
-    left: -9999px;
-    top: -9999px;
-    width: 320px;
-    height: 240px;
-    transform: scaleX(-1);
+    position: fixed; left: -9999px; top: -9999px;
+    width: 320px; height: 240px; transform: scaleX(-1);
   }
 
   .gesture-cursor {
-    display: none;
-    position: fixed;
-    z-index: 99999;
-    width: 20px;
-    height: 20px;
-    pointer-events: none;
+    display: none; position: fixed; z-index: 99999;
+    width: 20px; height: 20px; pointer-events: none;
     transform: translate(-50%, -50%);
-    border: 2px solid var(--accent, #2b6cb0);
-    border-radius: 50%;
-    background: rgba(43,108,176,0.1);
+    border: 2px solid var(--accent, #2563eb); border-radius: 50%;
+    background: rgba(37,99,235,0.1);
     transition: width 0.12s, height 0.12s, background 0.12s;
   }
   .gesture-cursor.active { display: block; }
   .gesture-cursor.clicking {
     width: 14px; height: 14px;
-    background: rgba(43,108,176,0.35);
-    border-width: 3px;
+    background: rgba(37,99,235,0.35); border-width: 3px;
   }
 
   .gesture-toast {
-    position: fixed;
-    bottom: 5rem;
-    right: 1.5rem;
-    z-index: 9997;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    background: var(--text-primary, #1a1a2e);
-    color: #fff;
-    font-size: 0.8rem;
-    font-family: var(--font-sans);
-    opacity: 0;
-    transform: translateY(8px);
+    position: fixed; bottom: 5rem; right: 1.5rem; z-index: 9997;
+    padding: 0.5rem 1rem; border-radius: 8px;
+    background: var(--text-primary, #0d1117); color: #fff;
+    font-size: 0.8rem; font-family: var(--font-sans);
+    opacity: 0; transform: translateY(8px);
     transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-    max-width: 260px;
+    pointer-events: none; max-width: 260px;
   }
   .gesture-toast.show { opacity: 1; transform: translateY(0); }
 </style>
 
 <script>
 (function() {
+  const LS_KEY = 'gesture_control_enabled';
+
   const toggleBtn = document.getElementById('gesture-toggle');
   const labelEl = document.getElementById('gesture-label');
   const videoEl = document.getElementById('gesture-video');
@@ -139,18 +113,16 @@ const { enabled = false } = Astro.props;
     toastEl._t = setTimeout(() => toastEl.classList.remove('show'), dur || 2000);
   }
 
-  // ---- 手势处理 ----
   function onResults(r) {
     if (!r.multiHandLandmarks || !r.multiHandLandmarks[0]) {
       cursorEl.style.opacity = '0.3';
       return;
     }
     cursorEl.style.opacity = '1';
-
     const lm = r.multiHandLandmarks[0];
     const idx = lm[8], th = lm[4], mid = lm[12];
 
-    // 光标
+    // Cursor
     const tx = (1 - idx.x) * window.innerWidth;
     const ty = idx.y * window.innerHeight;
     cursorX += (tx - cursorX) * 0.55;
@@ -158,7 +130,7 @@ const { enabled = false } = Astro.props;
     cursorEl.style.left = cursorX + 'px';
     cursorEl.style.top = cursorY + 'px';
 
-    // 捏合点击
+    // Pinch click
     const d = Math.hypot((th.x - idx.x) * window.innerWidth, (th.y - idx.y) * window.innerHeight);
     if (d < 30 && !clicking) {
       clicking = true;
@@ -172,12 +144,11 @@ const { enabled = false } = Astro.props;
       if (el) el.dispatchEvent(new MouseEvent('mouseup', {bubbles: true}));
     }
 
-    // 两指滚动
+    // Two-finger scroll
     const dm = Math.hypot((idx.x - mid.x) * window.innerWidth, (idx.y - mid.y) * window.innerHeight);
     if (dm > 55) window.scrollBy(0, (mid.y - 0.5) * 6);
   }
 
-  // ---- 初始化 MediaPipe ----
   async function initMP() {
     try {
       hands = new Hands({
@@ -188,11 +159,8 @@ const { enabled = false } = Astro.props;
         minDetectionConfidence: 0.7, minTrackingConfidence: 0.6
       });
       hands.onResults(onResults);
-
       camera = new Camera(videoEl, {
-        onFrame: async () => {
-          try { await hands.send({image: videoEl}); } catch(e) {}
-        },
+        onFrame: async () => { try { await hands.send({image: videoEl}); } catch(e) {} },
         width: 320, height: 240
       });
       await camera.start();
@@ -215,18 +183,18 @@ const { enabled = false } = Astro.props;
     toggleBtn.classList.remove('active', 'loading');
     labelEl.textContent = '手势';
     active = false;
+    localStorage.setItem(LS_KEY, 'false');
   }
 
   async function start() {
     toggleBtn.classList.add('loading');
     labelEl.textContent = '加载中…';
-    toast('🔄 加载手势模型中…', 5000);
 
     const ok = await initMP();
     if (!ok) {
       toggleBtn.classList.remove('loading');
       labelEl.textContent = '手势';
-      toast('❌ 摄像头启动失败，请检查权限', 3000);
+      localStorage.setItem(LS_KEY, 'false');
       return;
     }
 
@@ -235,19 +203,23 @@ const { enabled = false } = Astro.props;
     toggleBtn.classList.add('active');
     labelEl.textContent = '手势';
     cursorEl.classList.add('active');
-    toast('🖐️ 手势控制已启用  ·  Esc 退出');
+    localStorage.setItem(LS_KEY, 'true');
+    toast('🖐️ 手势控制已启用');
   }
 
+  // ===== Toggle button =====
   toggleBtn.addEventListener('click', () => {
-    active ? (cleanup(), toast('手势控制已关闭')) : start();
+    active ? cleanup() : start();
   });
 
+  // ===== Esc to quit =====
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && active) { cleanup(); toast('手势控制已关闭'); }
   });
 
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && active) cleanup();
-  });
+  // ===== Auto-start on load if previously enabled =====
+  if (localStorage.getItem(LS_KEY) === 'true') {
+    start();
+  }
 })();
 </script>
