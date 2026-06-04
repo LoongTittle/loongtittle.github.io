@@ -3,18 +3,49 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="项目" currentPath="/projects">
-  <section class="section fade-in" style="padding:4rem 0;">
+  <slot name="head">
+    <style>
+      .page { padding: 3rem 0; }
+      .page h1 { margin-bottom: 1.5rem; }
+
+      .project-list { display: grid; gap: 1.25rem; }
+      .project-card {
+        display: block;
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      .project-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
+      .project-card h2 { font-size: 1.125rem; margin: 0 0 0.3rem; }
+      .project-card .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+      .project-card p { font-size: 0.875rem; color: var(--text-secondary); margin: 0; line-height: 1.6; }
+      .project-card .status { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+    </style>
+  </slot>
+
+  <div class="page fade-in">
     <div class="content-container">
       <h1>项目</h1>
-      <p style="color:var(--text-secondary); margin-bottom:2rem;">
-        嵌入式开发 · STM32 项目
-      </p>
-
-      <p>项目内容准备中，敬请期待……</p>
+      <div class="project-list">
+        <a href="/projects/embedded-lab/" class="project-card">
+          <div class="meta">
+            <span class="tag">STM32F407</span>
+            <span class="tag">C</span>
+            <span class="tag">UART</span>
+            <span class="tag">SysTick</span>
+          </div>
+          <h2>串口命令控制 LED 系统</h2>
+          <p>基于 STM32F407 的非阻塞 LED 控制系统。串口命令实时控制 LED 颜色与模式，三层模块化架构（BSP/App/User），UART 中断 + 环形缓冲区 FIFO，SysTick 非阻塞延时。</p>
+          <div class="status">嵌入式工程实验室 · 持续建设中</div>
+        </a>
+      </div>
     </div>
-  </section>
+  </div>
 </BaseLayout>
-
-<style>
-  .section { padding: 3rem 0; }
-</style>
