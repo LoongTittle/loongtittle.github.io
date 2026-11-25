@@ -1,9 +1,10 @@
 ---
+import content from '../data/site-content.json';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PeripheralProjectCard from '../components/PeripheralProjectCard.astro';
 ---
 
-<BaseLayout title="杨常卿 · 嵌入式工程师" currentPath="/">
+<BaseLayout title={`${content.profile.name} · ${content.profile.role}`} currentPath="/">
   <slot name="head">
     <style>
       /* ===== Hero with animated gradient ===== */
@@ -167,21 +168,16 @@ import PeripheralProjectCard from '../components/PeripheralProjectCard.astro';
       </div>
 
       <h1>
-        杨<span class="highlight">常卿</span>
+        {content.profile.name.slice(0, 1)}<span class="highlight">{content.profile.name.slice(1)}</span>
       </h1>
 
       <p class="tagline">
-        嵌入式软件工程师 · 研0<br />
-        从学生思维到工程师思维
+        {content.profile.role}<br />
+        {content.home.tagline}
       </p>
 
       <div class="hero-badges">
-        <span class="badge">STM32</span>
-        <span class="badge">C / C++</span>
-        <span class="badge">Keil MDK</span>
-        <span class="badge">UART</span>
-        <span class="badge">SysTick</span>
-        <span class="badge">Git</span>
+        {content.home.badges.split("\n").filter(Boolean).map((badge) => <span class="badge">{badge}</span>)}
       </div>
 
       <div class="hero-actions">
@@ -204,7 +200,7 @@ import PeripheralProjectCard from '../components/PeripheralProjectCard.astro';
         <span class="status-dot"></span>
         <span class="status-text">
           <small>当前阶段</small>
-          研0工程化建设期 · 2026.06 – 2026.09
+          {content.home.status}
         </span>
       </div>
       <a href="/about/" class="btn btn-outline" style="font-size:0.8rem;padding:0.35rem 0.9rem;flex-shrink:0;">

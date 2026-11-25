@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="编辑网站" currentPath="/edit" enableGestures={false}>
+  <meta name="robots" content="noindex" slot="head" />
+  <div class="content-container editor">
+    <h1>编辑网站</h1>
+    <p>连接 GitHub 后可编辑个人资料、首页、关于页、简历和项目。发布会提交到 main 并触发 GitHub Pages 部署。</p>
+
+    <label for="github-token">GitHub 细粒度访问令牌</label>
+    <p id="token-help">令牌仅需此网站仓库的 Contents 读写权限，只在页面内存中使用。<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">在 GitHub 创建令牌</a></p>
+    <div class="actions">
+      <input id="github-token" type="password" autocomplete="off" aria-describedby="token-help" />
+      <button id="connect" class="btn btn-outline" type="button">载入最新内容</button>
+    </div>
+    <p id="editor-status" role="status" aria-live="polite"></p>
+    <form id="editor-form" hidden>
+      <div id="editor-fields"></div>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">发布到网站</button>
+        <a href="https://github.com/LoongTittle/loongtittle.github.io/actions/workflows/deploy.yml" target="_blank" rel="noopener noreferrer">查看部署进度</a>
+      </div>
+    </form>
+  </div>
+</BaseLayout>
+
+<script>
+  import initialContent from '../data/site-content.json';
+
+  const sections = {
+    profile: '个人资料', home: '首页', about: '关于页', resume: '简历', project: '项目',
+  };
+  const labels: Record<string, string> = {
+    name: '姓名', role: '职业方向', school: '学校', tagline: '首页简介',
+    status: '当前阶段', badges: '首页技能标签', intro: '简介', skills: '技能',
+    timeline: '时间线', date: '时间', title: '标题', description: '说明',
+    principles: '个人原则', subtitle: '简历副标题', education: '教育背景',
+    items: '技能条目', evaluation: '自我评价', summary: '项目卡片摘要',
+    stack: '项目技术栈', implementation: '项目实现',
+  };
+  const multiline = new Set(['badges', 'skills', 'intro', 'description', 'items', 'evaluation', 'summary', 'stack']);
+  const onePerLine = new Set(['badges', 'skills', 'items', 'stack']);
+  const endpoint = 'https://api.github.com/repos/LoongTittle/loongtittle.github.io/contents/src/data/site-content.json';
+  const form = document.querySelector<HTMLFormElement>('#editor-form')!;
+  const fields = document.querySelector<HTMLElement>('#editor-fields')!;
+  const tokenField = document.querySelector<HTMLInputElement>('#github-token')!;
+  const connect = document.querySelector<HTMLButtonElement>('#connect')!;
+  const submit = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+  const status = document.querySelector<HTMLElement>('#editor-status')!;
+  let token = '';
+  let fileSha = '';
+  let savedContent = '';
+  let content = structuredClone(initialContent);
+
+  function renderRecord(record: Record<string, unknown>, schema: Record<string, unknown>, container: HTMLElement) {
+    for (const [key, example] of Object.entries(schema)) {
+      if (typeof example === 'string') {
+        const label = document.createElement('label');
+        label.textContent = labels[key] + (onePerLine.has(key) ? '（每行一项）' : '');
+        const field = document.createElement(multiline.has(key) ? 'textarea' : 'input');
+        field.value = String(record[key] ?? '');
+        field.required = key === 'name' || key === 'role' || key === 'title';
+        field.addEventListener('input', () => { record[key] = field.value; });
+        label.append(field);
+        container.append(label);
+        continue;
+      }
+
+      if (!Array.isArray(example)) continue;
+      const group = document.createElement('fieldset');
+      const legend = document.createElement('legend');
+      legend.textContent = labels[key];
+      group.append(legend);
+      const entries = record[key] as Record<string, unknown>[];
+      const list = document.createElement('div');
+      group.append(list);
+      function appendEntry(entry: Record<string, unknown>) {
+        const row = document.createElement('div');
+        row.className = 'editor-row';
+        renderRecord(entry, example[0], row);
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '移除此项';
+        remove.addEventListener('click', () => {
+          entries.splice(entries.indexOf(entry), 1);
+          row.remove();
+        });
+        row.append(remove);
+        list.append(row);
+      }
+      entries.forEach(appendEntry);
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.textContent = '添加一项';
+      add.addEventListener('click', () => {
+        const entry = Object.fromEntries(Object.keys(example[0]).map((field) => [field, '']));
+        entries.push(entry);
+        appendEntry(entry);
+        list.lastElementChild?.querySelector('input, textarea')?.scrollIntoView({ block: 'nearest' });
+      });
+      group.append(add);
+      container.append(group);
+    }
+  }
+
+  async function request(url: string, auth: string, options?: RequestInit) {
+    const response = await fetch(url, {
+      ...options,
+      cache: 'no-store',
+      redirect: 'error',
+      credentials: 'omit',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${auth}`,
+        ...(options?.body ? { 'Content-Type': 'application/json' } : {}),
+      },
+    });
+    if (response.status === 409) throw Error('内容已被其他会话修改。请先复制本次改动，再重新载入最新内容。');
+    if (response.status === 401 || response.status === 403 || response.status === 404) {
+      throw Error('GitHub 拒绝访问。请确认令牌有效、已选中网站仓库，并具备 Contents 读写权限。');
+    }
+    if (!response.ok) throw Error(`GitHub 请求失败（HTTP ${response.status}）。`);
+    return response.json();
+  }
+
+  connect.addEventListener('click', async () => {
+    if (fileSha && JSON.stringify(content) !== savedContent && !confirm('重新载入会丢弃未发布的修改。继续吗？')) return;
+    const suppliedToken = tokenField.value.trim() || token;
+    if (!suppliedToken) {
+      status.textContent = '请输入 GitHub 令牌。';
+      tokenField.focus();
+      return;
+    }
+    connect.disabled = submit.disabled = true;
+    status.textContent = '正在载入最新内容…';
+    try {
+      const remote = await request(`${endpoint}?ref=main`, suppliedToken);
+      const bytes = Uint8Array.from(atob(remote.content), (character) => character.charCodeAt(0));
+      const latest = JSON.parse(new TextDecoder().decode(bytes)) as typeof initialContent;
+      const view = document.createDocumentFragment();
+      for (const key of Object.keys(sections) as (keyof typeof sections)[]) {
+        const group = document.createElement('fieldset');
+        const legend = document.createElement('legend');
+        legend.textContent = sections[key];
+        group.append(legend);
+        renderRecord(latest[key], initialContent[key], group);
+        view.append(group);
+      }
+      fields.replaceChildren(view);
+      content = latest;
+      fileSha = remote.sha;
+      savedContent = JSON.stringify(content);
+      token = suppliedToken;
+      form.hidden = false;
+      status.textContent = '已载入 main 的最新内容。';
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : '载入失败。';
+    } finally {
+      tokenField.value = '';
+      connect.disabled = submit.disabled = false;
+    }
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!token || !fileSha || JSON.stringify(content) === savedContent || submit.disabled) {
+      status.textContent = '暂无需要发布的修改。';
+      return;
+    }
+    if (!confirm('将当前修改提交到 main 并发布到公开网站？')) return;
+    const snapshot = JSON.stringify(content, null, 2) + '\n';
+    const encoded = btoa(new TextEncoder().encode(snapshot).reduce((result, byte) => result + String.fromCharCode(byte), ''));
+    const inputs = fields.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement>('input, textarea, button');
+    inputs.forEach((input) => { input.disabled = true; });
+    connect.disabled = submit.disabled = true;
+    status.textContent = '正在提交到 GitHub…';
+    try {
+      const result = await request(endpoint, token, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: 'Update website content',
+          branch: 'main',
+          sha: fileSha,
+          content: encoded,
+        }),
+      });
+      fileSha = result.content.sha;
+      savedContent = JSON.stringify(content);
+      status.textContent = `已提交 ${result.commit.sha.slice(0, 7)}。网站将在 GitHub Pages 部署成功后更新。`;
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : '提交失败。';
+    } finally {
+      inputs.forEach((input) => { input.disabled = false; });
+      connect.disabled = submit.disabled = false;
+    }
+  });
+</script>
+
+<style is:global>
+  .editor { padding-block: 2.5rem; }
+  .editor h1 { margin-bottom: 0.75rem; }
+  .editor label { display: grid; gap: 0.25rem; }
+  .editor input, .editor textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    color: inherit;
+    font: inherit;
+  }
+  .editor textarea { min-height: 5rem; resize: vertical; }
+  .editor fieldset { display: grid; gap: 0.75rem; padding: 1rem; margin-block: 1rem; border: 1px solid var(--border-light); min-width: 0; }
+  .editor legend { font-weight: 700; }
+  .editor .editor-row { display: grid; gap: 0.5rem; padding-block: 0.75rem; border-bottom: 1px solid var(--border-light); }
+  .editor .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+  .editor .actions input { width: min(100%, 24rem); }
+</style>

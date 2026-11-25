@@ -1,0 +1,90 @@
+{
+  "profile": {
+    "name": "杨常卿",
+    "role": "嵌入式软件工程师",
+    "school": "黑龙江大学"
+  },
+  "home": {
+    "tagline": "专注于无人机与机器人方向",
+    "status": "嵌入式系统学习与项目实践",
+    "badges": "STM32\nC / C++\nKeil MDK\nUART\nSysTick\nGit"
+  },
+  "about": {
+    "intro": "目标是成为嵌入式软件工程师，专注于无人机与机器人方向。通过项目实践积累可复用、可追溯的技术经验。",
+    "skills": "C（熟练）\nC++\nPython\nSTM32\n标准外设库\nGPIO\nUART\nSysTick\nKeil MDK\nGit",
+    "timeline": [
+      {
+        "date": "2026.09 – 2029.06",
+        "title": "黑龙江大学 · 控制工程 · 硕士",
+        "description": "无人机 / 机器人方向，工程实践与理论研究并行"
+      },
+      {
+        "date": "2022.09 – 2026.06",
+        "title": "黑龙江大学 · 自动化 · 本科",
+        "description": "控制理论与嵌入式开发基础"
+      }
+    ],
+    "principles": [
+      {
+        "title": "积极主动",
+        "description": "不是被动响应外部事件，而是主动规划、主动选择、主动承担责任。"
+      },
+      {
+        "title": "以终为始",
+        "description": "从想要的结果倒推现在该做什么。每一阶段都有清晰的目标节点。"
+      }
+    ]
+  },
+  "resume": {
+    "subtitle": "2029 届硕士 · 黑龙江大学 · 控制工程",
+    "education": [
+      {
+        "date": "2026.09 – 2029.06",
+        "title": "黑龙江大学 · 控制工程 · 硕士"
+      },
+      {
+        "date": "2022.09 – 2026.06",
+        "title": "黑龙江大学 · 自动化 · 本科"
+      }
+    ],
+    "skills": [
+      {
+        "title": "编程语言",
+        "items": "C（熟练）\nC++（基础）\nPython（基础）"
+      },
+      {
+        "title": "MCU 开发",
+        "items": "STM32（标准外设库）\nGPIO\nUART\nSysTick"
+      },
+      {
+        "title": "工具链",
+        "items": "Keil MDK\nGit"
+      },
+      {
+        "title": "工程习惯",
+        "items": "模块化分层架构\n开发文档与知识沉淀\n非阻塞编程思维"
+      }
+    ],
+    "evaluation": "目标嵌入式软件工程师。注重工程实践与知识沉淀，每完成一个模块均配套设计文档与开发日志， 确保可追溯可复用。具备独立驱动开发和问题排查能力，善于从底层理解硬件行为。"
+  },
+  "project": {
+    "title": "基于 i.MX6ULL 的嵌入式 Linux 外设远程控制与数据采集系统",
+    "summary": "通过 TCP 将主机命令行连接到 i.MX6ULL 板端服务，实现 LED 远程开关与 AP3216C 三通道数据回传。",
+    "intro": "面向 i.MX6ULL 开发板的外设调试，使用 C 实现主机命令行客户端与板端 Linux 服务。主机通过 TCP 下发指令，板端访问 Linux 设备文件，将操作结果和传感器读数回传至主机。",
+    "stack": "NXP i.MX6ULL\nEmbedded Linux\nC\nTCP Socket\npthread\nLinux 设备文件\nMake\nARM 交叉编译",
+    "implementation": [
+      {
+        "title": "TCP 通信与连接管理",
+        "description": "使用 pthread 为每个客户端连接分配独立线程，将连接接入与命令处理分开。发送端通过循环补发处理 send() 部分写入，接收端识别对端断开并结束会话。"
+      },
+      {
+        "title": "命令分发与外设访问",
+        "description": "将文本命令拆分为参数并分发至对应外设模块。板端通过 Linux 设备文件控制 LED 开关，并读取、回传 AP3216C 的红外、环境光和接近感测数据。"
+      },
+      {
+        "title": "主机与板端分离构建",
+        "description": "使用 Makefile 管理本机 GCC 与 ARM 交叉工具链，分别生成主机客户端和 i.MX6ULL 板端服务程序，并自动跟踪头文件依赖。"
+      }
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 ---
+import content from '../data/site-content.json';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { peripheralControl as project } from '../data/peripheral-control';
 ---
@@ -33,55 +34,28 @@ import { peripheralControl as project } from '../data/peripheral-control';
     <div class="content-container">
 
       <div class="page-head">
-        <h1>杨常卿</h1>
-        <div class="sub">嵌入式软件工程师 · 求职意向</div>
-        <div class="meta-line">2029 届硕士 · 黑龙江大学 · 控制工程</div>
+        <h1>{content.profile.name}</h1>
+        <div class="sub">{content.profile.role} · 求职意向</div>
+        <div class="meta-line">{content.resume.subtitle}</div>
       </div>
 
       <div class="page-section">
         <h2>🎓 教育背景</h2>
         <div class="info-grid">
-          <span class="label">2026.09 – 2029.06</span>
-          <span class="value">黑龙江大学 · 控制工程 · 硕士</span>
-          <span class="label">2022.09 – 2026.06</span>
-          <span class="value">黑龙江大学 · 自动化 · 本科</span>
+          {content.resume.education.map(({ date, title }) => <><span class="label">{date}</span><span class="value">{title}</span></>)}
         </div>
       </div>
 
       <div class="page-section">
         <h2>🔧 专业技能</h2>
-        <div class="skill-area">
-          <div class="cat">编程语言</div>
-          <div class="items">
-            <span class="tag">C（熟练）</span>
-            <span class="tag">C++（基础）</span>
-            <span class="tag">Python（基础）</span>
+        {content.resume.skills.map(({ title, items }) => (
+          <div class="skill-area">
+            <div class="cat">{title}</div>
+            <div class="items">
+              {items.split('\n').filter(Boolean).map((item) => <span class="tag">{item}</span>)}
+            </div>
           </div>
-        </div>
-        <div class="skill-area">
-          <div class="cat">MCU 开发</div>
-          <div class="items">
-            <span class="tag">STM32（标准外设库）</span>
-            <span class="tag">GPIO</span>
-            <span class="tag">UART</span>
-            <span class="tag">SysTick</span>
-          </div>
-        </div>
-        <div class="skill-area">
-          <div class="cat">工具链</div>
-          <div class="items">
-            <span class="tag">Keil MDK</span>
-            <span class="tag">Git</span>
-          </div>
-        </div>
-        <div class="skill-area">
-          <div class="cat">工程习惯</div>
-          <div class="items">
-            <span class="tag">模块化分层架构</span>
-            <span class="tag">开发文档与知识沉淀</span>
-            <span class="tag">非阻塞编程思维</span>
-          </div>
-        </div>
+        ))}
       </div>
 
       <section class="page-section">
@@ -97,10 +71,7 @@ import { peripheralControl as project } from '../data/peripheral-control';
 
       <div class="page-section">
         <h2>🧭 自我评价</h2>
-        <div class="eval-box">
-          目标嵌入式软件工程师。注重工程实践与知识沉淀，每完成一个模块均配套设计文档与开发日志，
-          确保可追溯可复用。具备独立驱动开发和问题排查能力，善于从底层理解硬件行为。
-        </div>
+        <div class="eval-box">{content.resume.evaluation}</div>
       </div>
 
     </div>

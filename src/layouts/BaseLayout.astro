@@ -1,14 +1,16 @@
 ---
 import '../styles/global.css';
+import content from '../data/site-content.json';
 import GestureControl from '../components/GestureControl.astro';
 
 export interface Props {
   title: string;
   description?: string;
   currentPath?: string;
+  enableGestures?: boolean;
 }
 
-const { title, description = '杨常卿 · 嵌入式工程师', currentPath = '/' } = Astro.props;
+const { title, description = `${content.profile.name} · ${content.profile.role}`, currentPath = '/', enableGestures = true } = Astro.props;
 
 const navItems = [
   { href: '/', label: '首页' },
@@ -34,7 +36,7 @@ const navItems = [
   <body>
     <nav class="nav">
       <div class="container nav-inner">
-        <a href="/" class="nav-logo">杨常卿</a>
+        <a href="/" class="nav-logo">{content.profile.name}</a>
         <button class="nav-toggle" aria-label="菜单" id="nav-toggle">
           <span></span><span></span><span></span>
         </button>
@@ -61,13 +63,14 @@ const navItems = [
     <footer class="footer">
       <div class="container">
         <p>
-          © {new Date().getFullYear()} 杨常卿 ·
-          <a href="https://github.com/LoongTittle" target="_blank" rel="noopener">GitHub</a>
+          © {new Date().getFullYear()} {content.profile.name} ·
+          <a href="https://github.com/LoongTittle" target="_blank" rel="noopener">GitHub</a> ·
+          <a href="/edit/">编辑网站</a>
         </p>
       </div>
     </footer>
 
-    <GestureControl />
+    {enableGestures && <GestureControl />}
 
     <script>
       document.getElementById('nav-toggle')?.addEventListener('click', () => {
