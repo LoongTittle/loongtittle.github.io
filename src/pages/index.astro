@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PeripheralProjectCard from '../components/PeripheralProjectCard.astro';
 ---
 
 <BaseLayout title="杨常卿 · 嵌入式工程师" currentPath="/">
@@ -150,89 +151,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       .status-text { font-size: 0.9rem; font-weight: 500; }
       .status-text small { font-weight: 400; color: var(--text-muted); font-size: 0.8rem; display: block; }
 
-      /* ===== Section ===== */
-      .section { padding: 2.5rem 0; }
-      .section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.25rem;
-      }
-      .section-header h2 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin: 0;
-        font-family: 'JetBrains Mono', monospace;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .section-header .more {
-        font-size: 0.82rem;
-        color: var(--text-muted);
-        transition: color 0.2s;
-        font-weight: 500;
-      }
-      .section-header .more:hover { color: var(--accent); }
-
-      /* ===== Project card ===== */
-      .project-card {
-        display: block;
-        background: var(--bg-card);
-        border: 1px solid var(--border-light);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        text-decoration: none;
-        color: inherit;
-        transition: all 0.3s var(--ease-out);
-        position: relative;
-        overflow: hidden;
-      }
-      .project-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--accent), #7c3aed, transparent);
-      }
-      .project-card:hover {
-        box-shadow: var(--shadow-xl);
-        transform: translateY(-4px);
-      }
-      .project-card .label {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.72rem;
-        color: var(--accent);
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-      }
-      .project-card h3 {
-        font-size: 1.2rem;
-        margin: 0 0 0.5rem;
-      }
-      .project-card p {
-        font-size: 0.88rem;
-        color: var(--text-secondary);
-        margin: 0;
-        line-height: 1.7;
-      }
-      .project-card .tags {
-        display: flex;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-        margin: 1rem 0 0;
-      }
-
-      /* ===== Divider ===== */
-      .section-divider {
-        width: 60px; height: 2px;
-        margin: 0 auto;
-        background: linear-gradient(90deg, transparent, var(--accent-subtle), transparent);
-        border: none;
-      }
-
       @media (max-width: 768px) {
         .hero { min-height: auto; padding: 3rem 0; }
       }
@@ -294,27 +212,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </a>
     </div>
   </div>
-
-  <hr class="section-divider" />
-
-  <!-- ===== Project ===== -->
-  <section class="section">
-    <div class="container">
-      <div class="section-header fade-in delay-2">
-        <h2>/projects</h2>
-        <a href="/projects/" class="more">全部 →</a>
-      </div>
-      <a href="/projects/embedded-lab/" class="project-card fade-in-up delay-2">
-        <div class="label">EmbeddedLab</div>
-        <h3>串口命令控制 LED 系统</h3>
-        <p>基于 STM32F407 的非阻塞 LED 控制系统。串口实时控制、三层模块化架构、UART 中断 + 环形缓冲区 FIFO、SysTick 非阻塞延时。</p>
-        <div class="tags">
-          <span class="tag">STM32F407</span>
-          <span class="tag">C</span>
-          <span class="tag">UART</span>
-          <span class="tag">SysTick</span>
-        </div>
-      </a>
-    </div>
+  <section class="container" aria-label="精选项目" style="padding-block: 2rem;">
+    <PeripheralProjectCard />
   </section>
 </BaseLayout>

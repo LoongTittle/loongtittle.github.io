@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { peripheralControl as project } from '../data/peripheral-control';
 ---
 
 <BaseLayout title="简历" currentPath="/resume">
@@ -18,13 +19,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       .skill-area { margin-bottom: 0.75rem; }
       .skill-area .cat { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; font-family: 'JetBrains Mono', monospace; }
       .skill-area .items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-
-      .project-block { margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-md); }
-      .project-block h3 { font-size: 1rem; margin: 0 0 0.15rem; }
-      .project-block .tech-stack { font-size: 0.78rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 0.5rem; }
-      .project-block p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-      .project-block ul { font-size: 0.84rem; color: var(--text-secondary); padding-left: 1.2rem; }
-      .project-block ul li { margin-bottom: 0.15rem; }
 
       .eval-box {
         font-size: 0.88rem; color: var(--text-secondary); line-height: 1.8;
@@ -90,20 +84,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
-      <div class="page-section">
-        <h2>🚀 项目经历</h2>
-        <div class="project-block">
-          <h3>串口命令控制 LED 系统</h3>
-          <div class="tech-stack">C · STM32F407 · Keil MDK · 标准外设库</div>
-          <p>基于 STM32F407 实现的非阻塞 LED 控制系统，支持通过串口命令实时控制 LED 颜色与模式。</p>
-          <ul>
-            <li><strong>架构设计：</strong>BSP/App/User 三层模块化架构，各层职责明确，模块可复用</li>
-            <li><strong>中断接收：</strong>UART 中断（RXNE）+ 环形缓冲区 FIFO，ISR 只存不处理，主循环消费，零丢数据</li>
-            <li><strong>系统时钟：</strong>SysTick 1ms 中断，提供 Tick_Get / Tick_Elapsed 非阻塞延时 API，实现多任务并行调度</li>
-            <li><strong>命令解析：</strong>字符串命令引擎（strncmp + sscanf），支持 8+ 种颜色控制及 help/status 指令</li>
-          </ul>
-        </div>
-      </div>
+      <section class="page-section">
+        <h2>项目经历</h2>
+        <h3><a href={project.href}>{project.title}</a></h3>
+        <p>{project.summary}</p>
+        <ul>
+          {project.implementation.map(({ title, description }) => (
+            <li><strong>{title}</strong>　{description}</li>
+          ))}
+        </ul>
+      </section>
 
       <div class="page-section">
         <h2>🧭 自我评价</h2>

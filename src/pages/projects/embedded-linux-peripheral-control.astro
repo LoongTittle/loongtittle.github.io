@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { peripheralControl as project } from '../../data/peripheral-control';
+---
+
+<BaseLayout title={project.title} currentPath="/projects">
+  <article class="content-container project">
+    <a href="/projects/">← 全部项目</a>
+    <h1>{project.title}</h1>
+    <p>面向 i.MX6ULL 开发板的外设调试，使用 C 实现主机命令行客户端与板端 Linux 服务。主机通过 TCP 下发指令，板端访问 Linux 设备文件，将操作结果和传感器读数回传至主机。</p>
+    <ul class="stack" aria-label="核心技术栈">
+      {project.stack.map((item) => <li class="tag">{item}</li>)}
+    </ul>
+    <h2>项目实现</h2>
+    {project.implementation.map(({ title, description }) => (
+      <section>
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </section>
+    ))}
+    <a class="btn btn-outline" href={project.source}>查看 GitHub 源码</a>
+  </article>
+</BaseLayout>
+
+<style>
+  .project { padding-block: 2.5rem; }
+  h1 { margin-block: 1rem; }
+  .stack { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin-bottom: 2rem; }
+  section { margin-block: 1rem; }
+</style>

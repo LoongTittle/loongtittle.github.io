@@ -1,0 +1,24 @@
+---
+import { peripheralControl as project } from '../data/peripheral-control';
+---
+
+<article>
+  <h2><a href={project.href}>{project.title}</a></h2>
+  <p>{project.summary}</p>
+  <div class="tags">
+    {project.stack.slice(0, 5).map((item) => <span class="tag">{item}</span>)}
+  </div>
+</article>
+
+<style>
+  article {
+    padding: 1.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+  }
+
+  h2 { font-size: 1.2rem; margin: 0 0 0.5rem; }
+  p { color: var(--text-secondary); margin: 0 0 0.75rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+</style>
